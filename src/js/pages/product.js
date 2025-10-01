@@ -38,8 +38,9 @@ const store = {
 function Product() {
   // Product 내에서 상태(변하는 데이터) : 도서
   this.books;
-  this.category;
+  this.category = {};
 
+  // 초기화 함수
   this.init = () => {
     this.books = store.getLocalStorage("books") || {
       it: [],
@@ -47,14 +48,24 @@ function Product() {
       literature: [],
       history: [],
     };
-    this.category = "it";
+    this.category = {
+      code: "it",
+      name: "IT",
+    };
 
+    setCategory();
     loadBooks();
   };
 
+  // 카테고리 변경 함수
   const setCategory = (e) => {
     // 클릭한 버튼이 이미 active인지 확인
-    const $clickedBtn = e.target;
+    const $clickedBtn =
+      e?.target ||
+      Array.from(document.querySelectorAll(".category-btn")).find(
+        (btn) => btn.dataset.categoryCode === "it"
+      );
+
     if ($clickedBtn.classList.contains("active")) return;
 
     // 기존 active 삭제 및 클릭버튼에 active 추가
@@ -67,22 +78,24 @@ function Product() {
     $clickedBtn.classList.add("active");
 
     // 카테고리 코드 가져오고, 프로퍼티 수정
-    const category = $clickedBtn.dataset.categoryCode;
-    this.category = category;
+    this.category.code = $clickedBtn.dataset.categoryCode;
+    this.category.name = $clickedBtn.innerText;
 
     // 상단의 제목 변경
     const $productTitle = $("#book-category-name");
-    $productTitle.innerText = $clickedBtn.innerText;
+    $productTitle.innerText = this.category.name;
   };
 
+  // 권 수 업데이트 함수
   const updateBookCount = () => {
-    const bookCount = this.books[this.category].length;
+    const bookCount = this.books[this.category.code].length;
     $("#book-count").innerText = bookCount;
   };
 
+  // 도서 목록 로드 함수
   const loadBooks = () => {
     // 책들을 순회하며 li요소를 만듦
-    const bookItems = this.books[this.category]
+    const bookItems = this.books[this.category.code]
       .map((book) => {
         return `
         <li class="book-item">
@@ -102,6 +115,7 @@ function Product() {
     updateBookCount();
   };
 
+  // 도서 추가 함수
   const addBook = () => {
     const bookName = $("#book-name-input").value;
     const bookPrice = Number($("#book-price-input").value);
@@ -120,6 +134,7 @@ function Product() {
     $("#book-name-input").focus();
   };
 
+  // 도서 수정 모달 오픈 함수
   const openEditModal = (e) => {
     const $bookItem = e.target.closest(".book-item");
 
@@ -137,19 +152,7 @@ function Product() {
     $("#edit-book-price").value = bookPrice;
   };
 
-  const deleteBook = (e) => {
-    const $bookItem = e.target.closest(".book-item");
-    const bookName = $bookItem.querySelector(".book-name").innerText;
-
-    if (confirm(`${bookName}을(를) 정말 삭제하시겠습니까?`)) {
-      this.books[this.category] = this.books[this.category].filter(
-        (book) => book.title !== bookName
-      );
-      store.setLocalStorage("books", this.books);
-      loadBooks();
-    }
-  };
-
+  // 도서 수정 함수
   const editBook = () => {
     const editBookIndex = $("#edit-book-index").value;
     const editBookName = $("#edit-book-name").value;
@@ -166,14 +169,27 @@ function Product() {
     loadBooks();
   };
 
-  // Mission1. 도서 추가
-  // 1) 엔터키 입력 또는 확인 버튼 클릭시 (form submit시)
+  // 도서 삭제 함수
+  const deleteBook = (e) => {
+    const $bookItem = e.target.closest(".book-item");
+    const bookName = $bookItem.querySelector(".book-name").innerText;
+
+    if (confirm(`${bookName}을(를) 정말 삭제하시겠습니까?`)) {
+      this.books[this.category] = this.books[this.category].filter(
+        (book) => book.title !== bookName
+      );
+      store.setLocalStorage("books", this.books);
+      loadBooks();
+    }
+  };
+
+  // 도서 추가 이벤트 처리
   $("#book-regist-form").addEventListener("submit", (e) => {
     e.preventDefault(); // 기본 이벤트 방지
     addBook();
   });
 
-  // Mission2. 도서 수정 / 삭제
+  // 도서 수정 모달 오픈 / 도서 삭제 이벤트 처리
   $("#book-list").addEventListener("click", (e) => {
     if (e.target.classList.contains("edit-btn")) {
       openEditModal(e);
@@ -182,11 +198,13 @@ function Product() {
     }
   });
 
+  // 도서 수정 이벤트 처리
   $("#book-edit-form").addEventListener("submit", (e) => {
     e.preventDefault();
     editBook();
   });
 
+  // 카테고리 변경 이벤트 처리
   $(".category-select").addEventListener("click", (e) => {
     if (!e.target.classList.contains("category-btn")) return;
     setCategory(e);
