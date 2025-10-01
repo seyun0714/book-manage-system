@@ -83,8 +83,6 @@ function Product() {
 
     $("#book-regist-form").reset(); // 입력값 초기화
     $("#book-name-input").focus();
-
-    updateBookCount();
   };
 
   const openEditModal = (e) => {
@@ -109,9 +107,6 @@ function Product() {
     const bookName = $bookItem.querySelector(".book-name").innerText;
 
     if (confirm(`${bookName}을(를) 정말 삭제하시겠습니까?`)) {
-      $bookItem.remove();
-      updateBookCount();
-
       this.books = this.books.filter((book) => book.title !== bookName);
       store.setLocalStorage("books", this.books);
       loadBooks();
