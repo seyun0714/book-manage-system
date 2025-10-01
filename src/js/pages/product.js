@@ -37,16 +37,52 @@ const store = {
 
 function Product() {
   // Product 내에서 상태(변하는 데이터) : 도서
-  this.books = store.getLocalStorage("books") || [];
+  this.books;
+  this.category;
+
+  this.init = () => {
+    this.books = store.getLocalStorage("books") || {
+      it: [],
+      science: [],
+      literature: [],
+      history: [],
+    };
+    this.category = "it";
+
+    loadBooks();
+  };
+
+  const setCategory = (e) => {
+    // 클릭한 버튼이 이미 active인지 확인
+    const $clickedBtn = e.target;
+    if ($clickedBtn.classList.contains("active")) return;
+
+    // 기존 active 삭제 및 클릭버튼에 active 추가
+    const $categoryList = document.querySelectorAll(".category-select>button");
+    $categoryList.forEach((category) => {
+      if (category.classList.contains("active")) {
+        category.classList.remove("active");
+      }
+    });
+    $clickedBtn.classList.add("active");
+
+    // 카테고리 코드 가져오고, 프로퍼티 수정
+    const category = $clickedBtn.dataset.categoryCode;
+    this.category = category;
+
+    // 상단의 제목 변경
+    const $productTitle = $("#book-category-name");
+    $productTitle.innerText = $clickedBtn.innerText;
+  };
 
   const updateBookCount = () => {
-    const bookCount = $("#book-list").children.length;
+    const bookCount = this.books[this.category].length;
     $("#book-count").innerText = bookCount;
   };
 
   const loadBooks = () => {
     // 책들을 순회하며 li요소를 만듦
-    const bookItems = this.books
+    const bookItems = this.books[this.category]
       .map((book) => {
         return `
         <li class="book-item">
@@ -65,7 +101,6 @@ function Product() {
     $("#book-list").innerHTML = bookItems;
     updateBookCount();
   };
-  loadBooks();
 
   const addBook = () => {
     const bookName = $("#book-name-input").value;
@@ -76,7 +111,7 @@ function Product() {
       return;
     }
 
-    this.books.push({ title: bookName, price: bookPrice });
+    this.books[this.category].push({ title: bookName, price: bookPrice });
     store.setLocalStorage("books", this.books);
 
     loadBooks();
@@ -107,7 +142,9 @@ function Product() {
     const bookName = $bookItem.querySelector(".book-name").innerText;
 
     if (confirm(`${bookName}을(를) 정말 삭제하시겠습니까?`)) {
-      this.books = this.books.filter((book) => book.title !== bookName);
+      this.books[this.category] = this.books[this.category].filter(
+        (book) => book.title !== bookName
+      );
       store.setLocalStorage("books", this.books);
       loadBooks();
     }
@@ -118,7 +155,10 @@ function Product() {
     const editBookName = $("#edit-book-name").value;
     const editBookPrice = Number($("#edit-book-price").value);
 
-    this.books[editBookIndex] = { title: editBookName, price: editBookPrice };
+    this.books[this.category][editBookIndex] = {
+      title: editBookName,
+      price: editBookPrice,
+    };
     store.setLocalStorage("books", this.books);
 
     $("#editModal .modal-close").click();
@@ -146,6 +186,14 @@ function Product() {
     e.preventDefault();
     editBook();
   });
+
+  $(".category-select").addEventListener("click", (e) => {
+    if (!e.target.classList.contains("category-btn")) return;
+    setCategory(e);
+    // 현재 카테고리 도서 목록 로드
+    loadBooks();
+  });
 }
 
 const product = new Product();
+product.init();
