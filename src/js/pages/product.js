@@ -1,39 +1,31 @@
 /*
-	Mission1. 도서 추가 기능
+Mission1. 도서 추가 기능
 	+ 도서명과 가격을 입력 후 "확인" 버튼 클릭 또는 엔터키 입력 시 도서를 추가한다. 
 	+ 도서명과 가격을 입력 후 "엔터키" 입력 시 도서가 추가된다.
 	+ 입력값이 누락되었을 경우 추가되지 않는다. (예외사항)
 	+ 도서 추가가 완료되면 입력 필드는 초기화한다.
 	+ 도서 추가 완료 시 도서의 갯수를 카운팅 하여 화면에 표현한다.
-
+  
 	Mission2. 도서 수정기능
 	+ 도서 정보의 "수정" 버튼 클릭시 모달 창이 뜬다.
 	+ 모달 창을 통해 도서명과 가격을 수정할 수 있다.
 	- 모달창을 통해 신규 도서명, 가격을 입력받고 저장 버튼 클릭시 도서명과 가격을 수정할 수 있다.
-
+  
 	Mission3. 도서 삭제기능
 	- 도서 정보의 "삭제" 버튼 클릭시 브라우저에 제공되는 confirm 창을 띄운다.
 	- 해당 confirm 창에서 "확인" 버튼이 클릭되면 해당 도서가 삭제된다.
 	- 도서 삭제 완료 시 도서의 갯수를 카운팅 하여 화면에 표현한다.
-*/
+  */
 
 /*
  미션 4.
-  - 도서 데이터를 localStorage에 저장한다
-    - 신규 데이터 추가
-    - 기존 도서 수정
-    - 기존 도서 삭제
-*/
-
-const $ = (selector) => document.querySelector(selector);
-const store = {
-  setLocalStorage(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
-  },
-  getLocalStorage(key) {
-    return JSON.parse(localStorage.getItem(key));
-  },
-};
+ - 도서 데이터를 localStorage에 저장한다
+ - 신규 데이터 추가
+ - 기존 도서 수정
+ - 기존 도서 삭제
+ */
+import { $ } from "../utils/dom.js";
+import { store } from "../store/store.js";
 
 function Product() {
   // Product 내에서 상태(변하는 데이터) : 도서
