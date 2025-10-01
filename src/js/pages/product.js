@@ -20,22 +20,21 @@
 const $ = (selector) => document.querySelector(selector);
 
 function Product() {
-  // Mission1. 도서 추가
-  // 1) 엔터키 입력 또는 확인 버튼 클릭시 (form submit시)
-  document
-    .querySelector("#book-regist-form")
-    .addEventListener("submit", (e) => {
-      e.preventDefault(); // 기본 이벤트 방지
+  const updateBookCount = () => {
+    const bookCount = $("#book-list").children.length;
+    $("#book-count").innerText = bookCount;
+  };
 
-      const bookName = $("#book-name-input").value;
-      const bookPrice = Number($("#book-price-input").value);
+  const addBook = () => {
+    const bookName = $("#book-name-input").value;
+    const bookPrice = Number($("#book-price-input").value);
 
-      if (!bookName || !bookPrice) {
-        alert("값이 누락되었습니다. 값을 다 입력해주세요.");
-        return;
-      }
+    if (!bookName || !bookPrice) {
+      alert("값이 누락되었습니다. 값을 다 입력해주세요.");
+      return;
+    }
 
-      const bookItem = `
+    const bookItem = `
 				<li class="book-item">
 					<div class="book-info">
 						<span class="book-name">${bookName}</span>
@@ -47,48 +46,74 @@ function Product() {
 					</div>
 				</li>`;
 
-      $("#book-list").insertAdjacentHTML("beforeend", bookItem);
+    $("#book-list").insertAdjacentHTML("beforeend", bookItem);
 
-      $("#book-regist-form").reset(); // 입력값 초기화
-      $("#book-name-input").focus();
+    $("#book-regist-form").reset(); // 입력값 초기화
+    $("#book-name-input").focus();
 
-      $("#book-count").innerText = $("#book-list").children.length;
-    });
+    updateBookCount();
+  };
 
-  // Mission2. 도서 수정
-  $("#book-list").addEventListener("click", (e) => {
-    // 클릭 이벤트가 발생한 요소 (이벤트 대상)가 수정버튼일 때만
-    if (e.target.classList.contains("edit-btn")) {
-      const $bookItem = e.target.closest(".book-item");
+  const openEditModal = (e) => {
+    const $bookItem = e.target.closest(".book-item");
 
-      const bookName = $bookItem.querySelector(".book-name").innerText;
-      const bookPrice = $bookItem
-        .querySelector(".book-price")
-        .innerText.replace("₩", "")
-        .replace(/,/g, "");
+    const bookName = $bookItem.querySelector(".book-name").innerText;
+    const bookPrice = $bookItem
+      .querySelector(".book-price")
+      .innerText.replace("₩", "")
+      .replace(/,/g, "");
 
-      // NodeList를 Array 객체로 만들어 indexOf 사용
-      const bookIndex = [...$("#book-list").children].indexOf($bookItem);
+    // NodeList를 Array 객체로 만들어 indexOf 사용
+    const bookIndex = [...$("#book-list").children].indexOf($bookItem);
 
-      $("#edit-book-index").value = bookIndex;
-      $("#edit-book-name").value = bookName;
-      $("#edit-book-price").value = bookPrice;
+    $("#edit-book-index").value = bookIndex;
+    $("#edit-book-name").value = bookName;
+    $("#edit-book-price").value = bookPrice;
+  };
+
+  const deleteBook = (e) => {
+    const $bookItem = e.target.closest(".book-item");
+    const bookName = $bookItem.querySelector(".book-name").innerText;
+
+    if (confirm(`${bookName}을(를) 정말 삭제하시겠습니까?`)) {
+      $bookItem.remove();
+      updateBookCount();
     }
-  });
+  };
 
-  $("#book-edit-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-
+  const editBook = () => {
     const editBookIndex = $("#edit-book-index").value;
     const editBookName = $("#edit-book-name").value;
     const editBookPrice = Number($("#edit-book-price").value);
 
     const $bookToEdit = $("#book-list").children[editBookIndex];
     $bookToEdit.querySelector(".book-name").innerText = editBookName;
-    $bookToEdit.querySelector(".book-price").innerText =
-      editBookPrice.toLocaleString();
+    $bookToEdit.querySelector(
+      ".book-price"
+    ).innerText = `₩${editBookPrice.toLocaleString()}`;
 
     $("#editModal .modal-close").click();
+  };
+
+  // Mission1. 도서 추가
+  // 1) 엔터키 입력 또는 확인 버튼 클릭시 (form submit시)
+  $("#book-regist-form").addEventListener("submit", (e) => {
+    e.preventDefault(); // 기본 이벤트 방지
+    addBook();
+  });
+
+  // Mission2. 도서 수정 / 삭제
+  $("#book-list").addEventListener("click", (e) => {
+    if (e.target.classList.contains("edit-btn")) {
+      openEditModal(e);
+    } else if (e.target.classList.contains("delete-btn")) {
+      deleteBook(e);
+    }
+  });
+
+  $("#book-edit-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    editBook();
   });
 }
 
