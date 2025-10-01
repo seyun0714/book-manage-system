@@ -1,7 +1,6 @@
 @import "./ui/index.css";
 @import "./ui/module/modal.css";
 
-
 .category-select {
   display: flex;
   justify-content: center;
@@ -11,7 +10,7 @@
 }
 
 .category-btn {
-  background: #6366f1;
+  background: #c4c4ff;
   color: white;
   border: none;
   border-radius: 25px;
@@ -23,17 +22,17 @@
   gap: 0.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 4px rgba(99, 102, 241, 0.3);
 }
 
 .category-btn.active {
-  background: #f59e0b;
-  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+  background: #6366f1;
+  box-shadow: 0 4px 4px rgba(99, 102, 241, 0.5);
 }
 
 .category-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+  background: #6366f1;
+  box-shadow: 0 8px 8px rgba(99, 102, 241, 0.4);
 }
 
 /* 도서 관리 카드 */
@@ -41,9 +40,7 @@
   background: #ffffff;
   border-radius: 20px;
   border-top: 5px solid #6366f1;
-  box-shadow: 
-    0 20px 40px rgba(0,0,0,0.1),
-    0 0 0 1px rgba(255,255,255,0.5);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.5);
   padding: 2.5rem;
   max-width: 700px;
   margin: 0 auto;
@@ -64,7 +61,7 @@
   font-weight: 800;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .book-count {
@@ -101,7 +98,7 @@
   font-weight: 500;
   background: #ffffff;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .book-name-input {
@@ -169,7 +166,7 @@
   background: #f1f5f9;
   border-color: #cbd5e1;
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .book-item.soldout .book-name,
@@ -245,21 +242,38 @@
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
-  .category-select {gap: 0.5rem;}
-  .category-btn {padding: 0.6rem 1.2rem; font-size: 0.85rem;}
-  .book-form {flex-direction: column; gap: 1rem;}
-  .input-group {gap: 0.5rem; width: 100%;}
-  .book-submit-btn {align-self: stretch; margin-top: 0; padding: 10px;}
-  .product-card {padding: 1.5rem; margin: 0 1rem;}
-  
+  .category-select {
+    gap: 0.5rem;
+  }
+  .category-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+  }
+  .book-form {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .input-group {
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .book-submit-btn {
+    align-self: stretch;
+    margin-top: 0;
+    padding: 10px;
+  }
+  .product-card {
+    padding: 1.5rem;
+    margin: 0 1rem;
+  }
+
   .book-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
   }
-  
+
   .book-actions {
     align-self: flex-end;
   }
 }
-
