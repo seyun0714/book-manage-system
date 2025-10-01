@@ -10,7 +10,7 @@
   min-height: 80px;
   background-color: #f9fafb;
   color: #242424;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(25, 24, 24, 0.1);
   z-index: 1000;
 }
 
@@ -22,7 +22,9 @@
   padding: 0 40px;
 }
 
-.logo {
+.logo a {
+  text-decoration: none;
+  color: #242424;
   font-size: 2rem;
   font-weight: 700;
 }
