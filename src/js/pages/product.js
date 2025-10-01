@@ -17,13 +17,55 @@
 	- 도서 삭제 완료 시 도서의 갯수를 카운팅 하여 화면에 표현한다.
 */
 
+/*
+ 미션 4.
+  - 도서 데이터를 localStorage에 저장한다
+    - 신규 데이터 추가
+    - 기존 도서 수정
+    - 기존 도서 삭제
+*/
+
 const $ = (selector) => document.querySelector(selector);
+const store = {
+  setLocalStorage(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+  },
+  getLocalStorage(key) {
+    return JSON.parse(localStorage.getItem(key));
+  },
+};
 
 function Product() {
+  // Product 내에서 상태(변하는 데이터) : 도서
+  this.books = store.getLocalStorage("books") || [];
+
   const updateBookCount = () => {
     const bookCount = $("#book-list").children.length;
     $("#book-count").innerText = bookCount;
   };
+
+  const loadBooks = () => {
+    // 책들을 순회하며 li요소를 만듦
+    const bookItems = this.books
+      .map((book) => {
+        return `
+        <li class="book-item">
+          <div class="book-info">
+            <span class="book-name">${book.title}</span>
+            <span class="book-price">₩${book.price.toLocaleString("ko")}</span>
+          </div>
+          <div class="book-actions">
+            <button class="edit-btn modal-toggle-btn" data-modal-target="editModal">수정</button>
+            <button class="delete-btn">삭제</button>
+          </div>
+        </li>`;
+      })
+      .join("");
+
+    $("#book-list").innerHTML = bookItems;
+    updateBookCount();
+  };
+  loadBooks();
 
   const addBook = () => {
     const bookName = $("#book-name-input").value;
@@ -34,19 +76,10 @@ function Product() {
       return;
     }
 
-    const bookItem = `
-				<li class="book-item">
-					<div class="book-info">
-						<span class="book-name">${bookName}</span>
-						<span class="book-price">₩${bookPrice.toLocaleString("ko")}</span>
-					</div>
-					<div class="book-actions">
-						<button class="edit-btn modal-toggle-btn" data-modal-target="editModal">수정</button>
-						<button class="delete-btn">삭제</button>
-					</div>
-				</li>`;
+    this.books.push({ title: bookName, price: bookPrice });
+    store.setLocalStorage("books", this.books);
 
-    $("#book-list").insertAdjacentHTML("beforeend", bookItem);
+    loadBooks();
 
     $("#book-regist-form").reset(); // 입력값 초기화
     $("#book-name-input").focus();
@@ -78,6 +111,10 @@ function Product() {
     if (confirm(`${bookName}을(를) 정말 삭제하시겠습니까?`)) {
       $bookItem.remove();
       updateBookCount();
+
+      this.books = this.books.filter((book) => book.title !== bookName);
+      store.setLocalStorage("books", this.books);
+      loadBooks();
     }
   };
 
@@ -86,13 +123,12 @@ function Product() {
     const editBookName = $("#edit-book-name").value;
     const editBookPrice = Number($("#edit-book-price").value);
 
-    const $bookToEdit = $("#book-list").children[editBookIndex];
-    $bookToEdit.querySelector(".book-name").innerText = editBookName;
-    $bookToEdit.querySelector(
-      ".book-price"
-    ).innerText = `₩${editBookPrice.toLocaleString()}`;
+    this.books[editBookIndex] = { title: editBookName, price: editBookPrice };
+    store.setLocalStorage("books", this.books);
 
     $("#editModal .modal-close").click();
+
+    loadBooks();
   };
 
   // Mission1. 도서 추가
